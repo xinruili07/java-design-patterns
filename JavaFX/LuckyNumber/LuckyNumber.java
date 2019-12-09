@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import javafx.application.Application;
@@ -7,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -46,7 +48,7 @@ public class LuckyNumber extends Application
     	root.add(new IntegerPanel(model), 0, 1, 1, 1);
     	root.add(new TextPanel(model), 0, 2, 1, 1);
     	root.add(new RomanNumeralPanel(model), 0, 3, 1, 1);
-    	
+
     	pPrimaryStage.setTitle("Lucky Number");
     	pPrimaryStage.setResizable(false);
         pPrimaryStage.setScene(new Scene(root));
@@ -85,12 +87,19 @@ class SliderPanel extends HBox implements Observer
 		aModel.addObserver(this);
 		aSlider.setValue(aModel.getNumber());
 		getChildren().add(aSlider);
+		Button button = new Button("Notify");
+		getChildren().add(button);
 
 		aSlider.valueProperty().addListener(new ChangeListener<Number>()
 		{
 			public void changed(ObservableValue<? extends Number> pValue, Number pOld, Number pNew) 
 			{
-				aModel.setNumber(pNew.intValue());				
+				button.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						aModel.setNumber(pNew.intValue());
+					}
+				});
 			}
 		});
 	}
@@ -136,7 +145,9 @@ class IntegerPanel extends HBox implements Observer
 		aText.setMinWidth(LuckyNumber.WIDTH); 
 		aText.setText(new Integer(aModel.getNumber()).toString());
 		getChildren().add(aText);
-		
+		Button button = new Button("Notify");
+		getChildren().add(button);
+
 		aText.setOnAction(new EventHandler<ActionEvent>()
 		{
 			@Override
@@ -146,12 +157,20 @@ class IntegerPanel extends HBox implements Observer
 				try
 				{
 					lInteger = Integer.parseInt(aText.getText());
+
 				}
 				catch(NumberFormatException pException )
 				{
 					// Just ignore. We'll use 1 instead.
 				}
-				aModel.setNumber(lInteger);	
+				int finalLInteger = lInteger;
+				button.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						aModel.setNumber(finalLInteger);
+					}
+				});
+
 			}
 		});
 	}	
@@ -173,6 +192,8 @@ class RomanNumeralPanel extends HBox implements Observer {
 		aText.setMinWidth(LuckyNumber.WIDTH);
 		aText.setText(GFG.printRoman(aModel.getNumber()));
 		getChildren().add(aText);
+		Button button = new Button("Notify");
+		getChildren().add(button);
 
 		aText.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -180,7 +201,15 @@ class RomanNumeralPanel extends HBox implements Observer {
 				String roman = "I";
 				roman = aText.getText();
 				RomanToNumeral ob = new RomanToNumeral();
-				aModel.setNumber(ob.romanToDecimal(roman));
+
+				String finalRoman = roman;
+				button.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						aModel.setNumber(ob.romanToDecimal(finalRoman));
+					}
+				});
+
 			}
 
 		});
@@ -211,6 +240,8 @@ class TextPanel extends HBox implements Observer
 		aText.setMinWidth(LuckyNumber.WIDTH);
 		aText.setText(LABELS[aModel.getNumber()]);
 		getChildren().add(aText);
+		Button button = new Button("Notify");
+		getChildren().add(button);
 		
 		
 		aText.setOnAction(new EventHandler<ActionEvent>()
@@ -227,7 +258,15 @@ class TextPanel extends HBox implements Observer
 						break;
 					}
 				}
-				aModel.setNumber(lIndex);
+
+				int finalLIndex = lIndex;
+				button.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent arg0) {
+						aModel.setNumber(finalLIndex);
+					}
+				});
+
 			}
 		});
 	}
